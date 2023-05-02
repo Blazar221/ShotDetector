@@ -8,21 +8,36 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.jar.JarEntry;
 
 public class FileChooser extends JPanel {
 
     private String videoUrl;
     public FileChooser(JPanel cardPanel, CardLayout cardLayout, VideoPlayer videoPlayer){
-        setLayout(new FlowLayout());
+        setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        JPanel buttonBars = new JPanel();
 
         JButton mp4Button = new JButton("Choose MP4");
         JButton rgbButton = new JButton("Choose RGB");
         JButton wavButton = new JButton("Choose WAV");
         JButton processButton = new JButton("Start Process");
-        add(mp4Button);
-        add(rgbButton);
-        add(wavButton);
-        add(processButton);
+        buttonBars.add(mp4Button);
+        buttonBars.add(rgbButton);
+        buttonBars.add(wavButton);
+        buttonBars.add(processButton);
+        add(buttonBars);
+
+        JPanel labelPanel = new JPanel();
+
+        JLabel mp4Label = new JLabel("No MP4");
+        JLabel rgbLabel = new JLabel("No RGB");
+        JLabel wavLabel = new JLabel("NO WAV");
+
+        labelPanel.add(mp4Label);
+        labelPanel.add(rgbLabel);
+        labelPanel.add(wavLabel);
+        add(labelPanel);
 
         mp4Button.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
@@ -36,6 +51,7 @@ public class FileChooser extends JPanel {
 
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
+                mp4Label.setText(selectedFile.getName());
                 videoUrl = selectedFile.getAbsolutePath();
             }
         });
@@ -52,6 +68,7 @@ public class FileChooser extends JPanel {
 
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
+                rgbLabel.setText(selectedFile.getName());
                 // TODO handle with the chosen rgb file
             }
         });
@@ -68,6 +85,7 @@ public class FileChooser extends JPanel {
 
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
+                wavLabel.setText(selectedFile.getName());
                 // TODO handle with the chosen wav file
             }
         });

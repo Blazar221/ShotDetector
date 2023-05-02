@@ -6,7 +6,7 @@ import java.awt.*;
 public class MainFrame {
 
     public MainFrame(){
-        JFrame frame = new JFrame();
+        JFrame frame = new JFrame("ShotDetector");
 
         frame.setBounds(new Rectangle(200, 200, 800, 600));
 

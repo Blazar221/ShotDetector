@@ -1,6 +1,7 @@
 package view;
 
 import model.IndexNode;
+import tool.ProcessTool;
 import uk.co.caprica.vlcj.player.base.ControlsApi;
 import uk.co.caprica.vlcj.player.base.StatusApi;
 import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
@@ -27,7 +28,7 @@ public class VideoPlayer extends JPanel{
 
     JPanel indexPanel;
 
-    public void init(List<IndexNode> nodes) {;
+    public void init(List<IndexNode> nodes, String videoUrl) {;
         setLayout(new BorderLayout());
 
         initMedia();
@@ -36,7 +37,8 @@ public class VideoPlayer extends JPanel{
 
         initTree(nodes);
 
-        mediaPlayerComponent.mediaPlayer().media().play("file:///D:/MyDocument/Study/576MultiMedia/proj/Ready_Player_One_rgb/Ready_Player_One_rgb/InputVideo.mp4");
+        //mediaPlayerComponent.mediaPlayer().media().play("file:///D:/MyDocument/Study/576MultiMedia/proj/Ready_Player_One_rgb/Ready_Player_One_rgb/InputVideo.mp4");
+        mediaPlayerComponent.mediaPlayer().media().play(videoUrl);
     }
 
     private void initMedia() {

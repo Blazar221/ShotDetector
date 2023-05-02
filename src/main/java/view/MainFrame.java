@@ -16,8 +16,8 @@ public class MainFrame {
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
 
-        FileChooser fileChooser = new FileChooser(cardPanel, cardLayout);
         VideoPlayer videoPlayer = new VideoPlayer();
+        FileChooser fileChooser = new FileChooser(cardPanel, cardLayout, videoPlayer);
 
         cardPanel.add(fileChooser, "FC");
         cardPanel.add(videoPlayer, "VP");

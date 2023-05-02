@@ -15,25 +15,20 @@ import java.awt.event.ActionListener;
 
 import java.util.List;
 
-public class VideoPlayer {
-    EmbeddedMediaPlayerComponent mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+public class VideoPlayer extends JPanel{
+    EmbeddedMediaPlayerComponent mediaPlayerComponent;
 
-    JFrame frame = new JFrame();
-    JPanel contentPane = new JPanel();
-
-    JPanel buttonBar = new JPanel();
-    JButton playButton = new JButton("Play");
-    JButton pauseButton = new JButton("Pause");
-    JButton stopButton = new JButton("Stop");
+    JPanel buttonBar;
+    JButton playButton;
+    JButton pauseButton;
+    JButton stopButton;
 
     double stoppedTime = -1;
 
-    JPanel indexPanel = new JPanel();
+    JPanel indexPanel;
 
-    public void init(List<IndexNode> nodes) {
-        frame.setBounds(new Rectangle(200, 200, 800, 600));
-        contentPane.setLayout(new BorderLayout());
-        frame.setContentPane(contentPane);
+    public void init(List<IndexNode> nodes) {;
+        setLayout(new BorderLayout());
 
         initMedia();
 
@@ -41,26 +36,27 @@ public class VideoPlayer {
 
         initTree(nodes);
 
-        frame.setBounds(new Rectangle(200, 0, 800, 600));
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         mediaPlayerComponent.mediaPlayer().media().play("file:///D:/MyDocument/Study/576MultiMedia/proj/Ready_Player_One_rgb/Ready_Player_One_rgb/InputVideo.mp4");
     }
 
     private void initMedia() {
         mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-        contentPane.add(mediaPlayerComponent, BorderLayout.CENTER);
+        add(mediaPlayerComponent, BorderLayout.CENTER);
     }
 
     private void initButtons() {
+        buttonBar = new JPanel();
+        playButton = new JButton("Play");
+        pauseButton = new JButton("Pause");
+        stopButton = new JButton("Stop");
+
         buttonBar.add(playButton);
         playButton.addActionListener(e -> playVideo());
         buttonBar.add(pauseButton);
         pauseButton.addActionListener(e -> pauseVideo());
         buttonBar.add(stopButton);
         stopButton.addActionListener(e -> stopVideo());
-        contentPane.add(buttonBar, BorderLayout.SOUTH);
+        add(buttonBar, BorderLayout.SOUTH);
     }
 
     private void initTree(List<IndexNode> nodes) {
@@ -93,9 +89,10 @@ public class VideoPlayer {
                 playVideo(nodeData.getTime());
             }
         });
+        indexPanel = new JPanel();
         indexPanel.add(tree);
 
-        contentPane.add(indexPanel, BorderLayout.WEST);
+        add(indexPanel, BorderLayout.WEST);
     }
 
     private void pauseVideo() {

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IndexNode {
-    private String name;
-    private double time;
-    private List<IndexNode> children;
+    private final String name;
+    private final double time;
+    private final List<IndexNode> children;
 
     public IndexNode(String name, double time) {
         this.name = name;

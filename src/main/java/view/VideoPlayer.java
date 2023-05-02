@@ -14,9 +14,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class VideoPlayer extends JPanel{
+public class VideoPlayer extends JPanel {
     EmbeddedMediaPlayerComponent mediaPlayerComponent;
 
     JPanel buttonBar;
@@ -24,11 +27,13 @@ public class VideoPlayer extends JPanel{
     JButton pauseButton;
     JButton stopButton;
 
-    double stoppedTime = -1;
+    List<Double> timeBoundaries = new ArrayList<>();
+    Set<Double> timeSet = new HashSet<>();
 
     JPanel indexPanel;
 
-    public void init(List<IndexNode> nodes, String videoUrl) {;
+    public void init(List<IndexNode> nodes, String videoUrl) {
+        ;
         setLayout(new BorderLayout());
 
         initMedia();
@@ -37,7 +42,6 @@ public class VideoPlayer extends JPanel{
 
         initTree(nodes);
 
-        //mediaPlayerComponent.mediaPlayer().media().play("file:///D:/MyDocument/Study/576MultiMedia/proj/Ready_Player_One_rgb/Ready_Player_One_rgb/InputVideo.mp4");
         mediaPlayerComponent.mediaPlayer().media().play(videoUrl);
     }
 
@@ -62,20 +66,26 @@ public class VideoPlayer extends JPanel{
     }
 
     private void initTree(List<IndexNode> nodes) {
+        timeBoundaries = new ArrayList<>();
+        timeSet = new HashSet<>();
+
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new IndexNode("Root", 0));
 
         for (IndexNode scene : nodes) {
             DefaultMutableTreeNode sceneNode = new DefaultMutableTreeNode(scene);
+            addTimePoint(scene.getTime());
             rootNode.add(sceneNode);
             if (!scene.isLeaf()) {
                 for (int j = 0; j < scene.getChildren().size(); j++) {
                     IndexNode shot = scene.getChildren().get(j);
                     DefaultMutableTreeNode shotNode = new DefaultMutableTreeNode(shot);
+                    addTimePoint(shot.getTime());
                     sceneNode.add(shotNode);
                     if (!shot.isLeaf()) {
                         for (int k = 0; k < shot.getChildren().size(); k++) {
                             IndexNode subshot = shot.getChildren().get(k);
                             DefaultMutableTreeNode subshotNode = new DefaultMutableTreeNode(subshot);
+                            addTimePoint(subshot.getTime());
                             shotNode.add(subshotNode);
                         }
                     }
@@ -97,17 +107,30 @@ public class VideoPlayer extends JPanel{
         add(indexPanel, BorderLayout.WEST);
     }
 
+    private void addTimePoint(double timePoint) {
+        if (!timeSet.contains(timePoint)) {
+            timeSet.add(timePoint);
+            timeBoundaries.add(timePoint * 1000);
+        }
+    }
+
+    private double findStopTime(double curTime) {
+        double prevTimeBoundary = 0;
+        for(double timeBoundary: timeBoundaries){
+            if(timeBoundary > curTime){
+                return prevTimeBoundary;
+            }
+            prevTimeBoundary = timeBoundary;
+        }
+        return timeBoundaries.get(timeBoundaries.size()-1);
+    }
+
     private void pauseVideo() {
         mediaPlayerComponent.mediaPlayer().controls().pause();
     }
 
     private void playVideo() {
-        if (stoppedTime >= 0) {
-            mediaPlayerComponent.mediaPlayer().controls().setTime((long) stoppedTime);
-            stoppedTime = -1;
-        } else {
-            mediaPlayerComponent.mediaPlayer().controls().play();
-        }
+        mediaPlayerComponent.mediaPlayer().controls().play();
     }
 
     private void playVideo(double second) {
@@ -115,6 +138,10 @@ public class VideoPlayer extends JPanel{
     }
 
     private void stopVideo() {
-        System.out.println(mediaPlayerComponent.mediaPlayer().status().time());
+        // This is millisecond
+        double curTime = mediaPlayerComponent.mediaPlayer().status().time();
+        //System.out.println(findStopTime());
+        mediaPlayerComponent.mediaPlayer().controls().setTime((long)(findStopTime(curTime)));
+        mediaPlayerComponent.mediaPlayer().controls().pause();
     }
 }

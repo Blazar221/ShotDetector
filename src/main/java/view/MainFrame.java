@@ -4,17 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MainFrame {
-    private JFrame frame;
-    private JPanel cardPanel;
-    private CardLayout cardLayout;
 
     public MainFrame(){
-        frame = new JFrame();
+        JFrame frame = new JFrame();
 
         frame.setBounds(new Rectangle(200, 200, 800, 600));
 
-        cardLayout = new CardLayout();
-        cardPanel = new JPanel(cardLayout);
+        CardLayout cardLayout = new CardLayout();
+        JPanel cardPanel = new JPanel(cardLayout);
 
         VideoPlayer videoPlayer = new VideoPlayer();
         FileChooser fileChooser = new FileChooser(cardPanel, cardLayout, videoPlayer);

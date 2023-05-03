@@ -128,7 +128,9 @@ public class VideoPlayer extends JPanel {
     }
 
     private void pauseVideo() {
-        mediaPlayerComponent.mediaPlayer().controls().pause();
+        if(mediaPlayerComponent.mediaPlayer().status().isPlaying()) {
+            mediaPlayerComponent.mediaPlayer().controls().pause();
+        }
     }
 
     private void playVideo() {
@@ -144,6 +146,8 @@ public class VideoPlayer extends JPanel {
         double curTime = mediaPlayerComponent.mediaPlayer().status().time();
         //System.out.println(findStopTime());
         mediaPlayerComponent.mediaPlayer().controls().setTime((long)(findStopTime(curTime)));
-        mediaPlayerComponent.mediaPlayer().controls().pause();
+        if(mediaPlayerComponent.mediaPlayer().status().isPlaying()) {
+            mediaPlayerComponent.mediaPlayer().controls().pause();
+        }
     }
 }

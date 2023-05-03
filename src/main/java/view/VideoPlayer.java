@@ -33,7 +33,7 @@ public class VideoPlayer extends JPanel {
     JPanel indexPanel;
 
     public void init(List<IndexNode> nodes, String videoUrl) {
-        ;
+
         setLayout(new BorderLayout());
 
         initMedia();
@@ -101,8 +101,10 @@ public class VideoPlayer extends JPanel {
                 playVideo(nodeData.getTime());
             }
         });
+        JScrollPane scrollPane = new JScrollPane(tree);
+        scrollPane.setPreferredSize(new Dimension(150, 500));
         indexPanel = new JPanel();
-        indexPanel.add(tree);
+        indexPanel.add(scrollPane);
 
         add(indexPanel, BorderLayout.WEST);
     }

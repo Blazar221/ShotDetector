@@ -1,2 +1,5 @@
 /.idea
 /target
+*.mp4
+*.rgb
+*.wav

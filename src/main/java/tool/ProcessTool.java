@@ -11,7 +11,7 @@ public enum ProcessTool {
     /**
      * Create mock index hierarchy nodes for test use
      *
-     * @return
+     * @return A tree of indexNodes, with root->scene->shot->subshot structure
      */
     public List<IndexNode> getMockIndexNodes() {
         List<IndexNode> nodes = new ArrayList<>();
@@ -32,6 +32,34 @@ public enum ProcessTool {
 
         nodes.add(scene1);
         nodes.add(scene2);
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
+        nodes.add(new IndexNode("Scene x", 20.0));
         return nodes;
     }
 }

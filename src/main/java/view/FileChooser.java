@@ -2,18 +2,28 @@ package view;
 
 import tool.ProcessTool;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.AreaAveragingScaleFilter;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.jar.JarEntry;
 
 public class FileChooser extends JPanel {
 
     private String videoUrl;
-    public FileChooser(JPanel cardPanel, CardLayout cardLayout, VideoPlayer videoPlayer){
+    private String rgbUrl;
+
+    public FileChooser(JPanel cardPanel, CardLayout cardLayout, VideoPlayer videoPlayer) {
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
         JPanel buttonBars = new JPanel();
@@ -38,6 +48,7 @@ public class FileChooser extends JPanel {
         labelPanel.add(rgbLabel);
         labelPanel.add(wavLabel);
         add(labelPanel);
+
 
         mp4Button.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
@@ -70,6 +81,7 @@ public class FileChooser extends JPanel {
                 File selectedFile = fileChooser.getSelectedFile();
                 rgbLabel.setText(selectedFile.getName());
                 // TODO handle with the chosen rgb file
+                rgbUrl = selectedFile.getAbsolutePath();
             }
         });
 
@@ -86,12 +98,13 @@ public class FileChooser extends JPanel {
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
                 wavLabel.setText(selectedFile.getName());
+
                 // TODO handle with the chosen wav file
             }
         });
 
         processButton.addActionListener(e -> {
-            videoPlayer.init(ProcessTool.INSTANCE.getMockIndexNodes(), videoUrl);
+            videoPlayer.init(ProcessTool.INSTANCE.processfile(rgbUrl), videoUrl);
             cardLayout.show(cardPanel, "VP");
         });
     }

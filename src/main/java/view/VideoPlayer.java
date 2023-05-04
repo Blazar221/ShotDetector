@@ -118,17 +118,17 @@ public class VideoPlayer extends JPanel {
 
     private double findStopTime(double curTime) {
         double prevTimeBoundary = 0;
-        for(double timeBoundary: timeBoundaries){
-            if(timeBoundary > curTime){
+        for (double timeBoundary : timeBoundaries) {
+            if (timeBoundary > curTime) {
                 return prevTimeBoundary;
             }
             prevTimeBoundary = timeBoundary;
         }
-        return timeBoundaries.get(timeBoundaries.size()-1);
+        return timeBoundaries.get(timeBoundaries.size() - 1);
     }
 
     private void pauseVideo() {
-        if(mediaPlayerComponent.mediaPlayer().status().isPlaying()) {
+        if (mediaPlayerComponent.mediaPlayer().status().isPlaying()) {
             mediaPlayerComponent.mediaPlayer().controls().pause();
         }
     }
@@ -138,15 +138,15 @@ public class VideoPlayer extends JPanel {
     }
 
     private void playVideo(double second) {
-        mediaPlayerComponent.mediaPlayer().controls().setTime((long) second * 1000);
+        mediaPlayerComponent.mediaPlayer().controls().setTime((long) (second * 1000));
     }
 
     private void stopVideo() {
         // This is millisecond
         double curTime = mediaPlayerComponent.mediaPlayer().status().time();
         //System.out.println(findStopTime());
-        mediaPlayerComponent.mediaPlayer().controls().setTime((long)(findStopTime(curTime)));
-        if(mediaPlayerComponent.mediaPlayer().status().isPlaying()) {
+        mediaPlayerComponent.mediaPlayer().controls().setTime((long) (findStopTime(curTime)));
+        if (mediaPlayerComponent.mediaPlayer().status().isPlaying()) {
             mediaPlayerComponent.mediaPlayer().controls().pause();
         }
     }

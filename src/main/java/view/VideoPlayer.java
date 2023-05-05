@@ -10,10 +10,13 @@ import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,9 +31,11 @@ public class VideoPlayer extends JPanel {
     JButton stopButton;
 
     List<Double> timeBoundaries = new ArrayList<>();
+    List<DefaultMutableTreeNode> timeBoundaryNodes = new ArrayList<>();
     Set<Double> timeSet = new HashSet<>();
 
     JPanel indexPanel;
+    JTree tree;
 
     public void init(List<IndexNode> nodes, String videoUrl) {
 
@@ -41,6 +46,8 @@ public class VideoPlayer extends JPanel {
         initButtons();
 
         initTree(nodes);
+
+        initLoopWorker();
 
         mediaPlayerComponent.mediaPlayer().media().play(videoUrl);
     }
@@ -73,19 +80,19 @@ public class VideoPlayer extends JPanel {
 
         for (IndexNode scene : nodes) {
             DefaultMutableTreeNode sceneNode = new DefaultMutableTreeNode(scene);
-            addTimePoint(scene.getTime());
+            addTimePoint(scene.getTime(), scene, sceneNode);
             rootNode.add(sceneNode);
             if (!scene.isLeaf()) {
                 for (int j = 0; j < scene.getChildren().size(); j++) {
                     IndexNode shot = scene.getChildren().get(j);
                     DefaultMutableTreeNode shotNode = new DefaultMutableTreeNode(shot);
-                    addTimePoint(shot.getTime());
+                    addTimePoint(shot.getTime(), shot, shotNode);
                     sceneNode.add(shotNode);
                     if (!shot.isLeaf()) {
                         for (int k = 0; k < shot.getChildren().size(); k++) {
                             IndexNode subshot = shot.getChildren().get(k);
                             DefaultMutableTreeNode subshotNode = new DefaultMutableTreeNode(subshot);
-                            addTimePoint(subshot.getTime());
+                            addTimePoint(subshot.getTime(), subshot, subshotNode);
                             shotNode.add(subshotNode);
                         }
                     }
@@ -93,12 +100,18 @@ public class VideoPlayer extends JPanel {
             }
         }
 
-        JTree tree = new JTree(rootNode);
-        tree.addTreeSelectionListener(e -> {
-            DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-            if (selectedNode != null && selectedNode.isLeaf()) {
-                IndexNode nodeData = (IndexNode) selectedNode.getUserObject();
-                playVideo(nodeData.getTime());
+        tree = new JTree(rootNode);
+        tree.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+                if (path != null) {
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+                    if (node != null && node.isLeaf()) {
+                        IndexNode nodeData = (IndexNode) node.getUserObject();
+                        playVideo(nodeData.getTime());
+                    }
+                }
             }
         });
         JScrollPane scrollPane = new JScrollPane(tree);
@@ -109,14 +122,21 @@ public class VideoPlayer extends JPanel {
         add(indexPanel, BorderLayout.WEST);
     }
 
-    private void addTimePoint(double timePoint) {
-        if (!timeSet.contains(timePoint)) {
+    private void initLoopWorker() {
+        LoopWorker loopWorker = new LoopWorker();
+        loopWorker.execute();
+    }
+
+    private void addTimePoint(double timePoint, IndexNode node, DefaultMutableTreeNode treeNode) {
+        if (!timeSet.contains(timePoint) && node.isLeaf()) {
             timeSet.add(timePoint);
             timeBoundaries.add(timePoint * 1000);
+            timeBoundaryNodes.add(treeNode);
         }
     }
 
-    private double findStopTime(double curTime) {
+    private double findStopTime() {
+        double curTime = mediaPlayerComponent.mediaPlayer().status().time();
         double prevTimeBoundary = 0;
         for (double timeBoundary : timeBoundaries) {
             if (timeBoundary > curTime) {
@@ -126,6 +146,7 @@ public class VideoPlayer extends JPanel {
         }
         return timeBoundaries.get(timeBoundaries.size() - 1);
     }
+
 
     private void pauseVideo() {
         if (mediaPlayerComponent.mediaPlayer().status().isPlaying()) {
@@ -142,12 +163,39 @@ public class VideoPlayer extends JPanel {
     }
 
     private void stopVideo() {
-        // This is millisecond
-        double curTime = mediaPlayerComponent.mediaPlayer().status().time();
-        //System.out.println(findStopTime());
-        mediaPlayerComponent.mediaPlayer().controls().setTime((long) (findStopTime(curTime)));
+        mediaPlayerComponent.mediaPlayer().controls().setTime((long) (findStopTime()));
         if (mediaPlayerComponent.mediaPlayer().status().isPlaying()) {
             mediaPlayerComponent.mediaPlayer().controls().pause();
         }
     }
+
+    class LoopWorker extends SwingWorker<Void, Void> {
+        @Override
+        protected Void doInBackground() throws Exception {
+            while (true) {
+                if (mediaPlayerComponent.mediaPlayer().status().isPlaying()) {
+                    DefaultMutableTreeNode curNode = timeBoundaryNodes.get(timeBoundaryNodes.size() - 1);
+                    double curTime = mediaPlayerComponent.mediaPlayer().status().time();
+                    for (int i = 1; i < timeBoundaries.size(); i++) {
+                        if (timeBoundaries.get(i) > curTime) {
+                            curNode = timeBoundaryNodes.get(i - 1);
+                            break;
+                        }
+                    }
+                    TreePath pathToNode = new TreePath(curNode.getPath());
+                    tree.setSelectionPath(pathToNode);
+                }
+
+                try {
+                    // Add a delay to prevent excessive resource usage
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 }
+
+

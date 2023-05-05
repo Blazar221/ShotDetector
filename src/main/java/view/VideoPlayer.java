@@ -30,7 +30,7 @@ public class VideoPlayer extends JPanel {
     JButton pauseButton;
     JButton stopButton;
 
-    List<Double> timeBoundaries = new ArrayList<>();
+    List<Long> timeBoundaries = new ArrayList<>();
     List<DefaultMutableTreeNode> timeBoundaryNodes = new ArrayList<>();
     Set<Double> timeSet = new HashSet<>();
 
@@ -109,7 +109,8 @@ public class VideoPlayer extends JPanel {
                     DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
                     if (node != null && node.isLeaf()) {
                         IndexNode nodeData = (IndexNode) node.getUserObject();
-                        playVideo(nodeData.getTime());
+                        System.out.println("set time is " + nodeData.getTime());
+                        playVideo(nodeData.getTime() + 0.1);
                     }
                 }
             }
@@ -130,7 +131,7 @@ public class VideoPlayer extends JPanel {
     private void addTimePoint(double timePoint, IndexNode node, DefaultMutableTreeNode treeNode) {
         if (!timeSet.contains(timePoint) && node.isLeaf()) {
             timeSet.add(timePoint);
-            timeBoundaries.add(timePoint * 1000);
+            timeBoundaries.add((long)(timePoint * 1000));
             timeBoundaryNodes.add(treeNode);
         }
     }
@@ -159,6 +160,7 @@ public class VideoPlayer extends JPanel {
     }
 
     private void playVideo(double second) {
+        System.out.println((long) (second * 1000));
         mediaPlayerComponent.mediaPlayer().controls().setTime((long) (second * 1000));
     }
 
@@ -175,20 +177,24 @@ public class VideoPlayer extends JPanel {
             while (true) {
                 if (mediaPlayerComponent.mediaPlayer().status().isPlaying()) {
                     DefaultMutableTreeNode curNode = timeBoundaryNodes.get(timeBoundaryNodes.size() - 1);
-                    double curTime = mediaPlayerComponent.mediaPlayer().status().time();
+                    long curTime = mediaPlayerComponent.mediaPlayer().status().time();
                     for (int i = 1; i < timeBoundaries.size(); i++) {
                         if (timeBoundaries.get(i) > curTime) {
                             curNode = timeBoundaryNodes.get(i - 1);
+                            System.out.println(curTime);
+                            System.out.println(i);
+                            System.out.println(timeBoundaries.get(i - 1));
+                            System.out.println("-----------");
+                            TreePath pathToNode = new TreePath(curNode.getPath());
+                            tree.setSelectionPath(pathToNode);
                             break;
                         }
                     }
-                    TreePath pathToNode = new TreePath(curNode.getPath());
-                    tree.setSelectionPath(pathToNode);
                 }
 
                 try {
                     // Add a delay to prevent excessive resource usage
-                    Thread.sleep(300);
+                    Thread.sleep(600);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
